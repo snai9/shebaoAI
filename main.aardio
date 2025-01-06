@@ -109,9 +109,15 @@ mainForm.editPrompt.oleCallback(
             var dataObj = com.interface.IDataObject(ptrDataObj);// 获取拖放数据对象
 
             var f = dataObj.getDropFile(); // 获取拖放文件
-
+			var filePath=f[1];
+			win.msgbox(filePath)
+			import uploadzs;
+			//var filePath = "d:\\test.txt"; 
+			var apiKey = "bc87929ac614eefc129a2bbe1ddbbec8.TggSr7H819Ta1LVQ"; // API 密钥
+			uploadzs.uploadFile(filePath, apiKey);
             
             var txt = dataObj.getText();// 获取拖放文本
+           win.msgbox(txt) 
 
 
             if(#f){
