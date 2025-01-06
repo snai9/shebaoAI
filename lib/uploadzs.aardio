@@ -1,0 +1,43 @@
+﻿import web.rest.client;
+namespace uploadzs{
+	// 定义上传文件的函数
+    uploadFile = function(filePath, apiKey) {
+        // API 地址
+        var url = "https://open.bigmodel.cn/api/llm-application/open/document/upload_document/1871063437791133696";
+
+        // 创建 HTTP 客户端
+        var http = ..web.rest.client();
+
+        // 生成 boundary 分隔符
+        var boundary = "----WebKitFormBoundary" ++ ..string.random(16);
+
+        // 读取文件内容
+        var file = ..io.file(filePath, "rb"); // 以二进制模式打开文件
+        var filename = ..io.splitpath(filePath).file;
+        var fileContent = file.read(-1); // 读取整个文件内容
+        file.close(); // 关闭文件
+
+        // 构建表单数据
+        var bodyy = "--" ++ boundary ++ '\r\n'; // 开始一个部分
+        bodyy = bodyy ++ 'Content-Disposition: form-data; name="files"; filename="' ++ filename ++ '"\r\n'; // 描述在知识库中显示的名称,必须有后缀
+        bodyy = bodyy ++ "Content-Type: application/octet-stream" ++ '\r\n\r\n'; // 描述文件类型,一定要是两个,还是是单引号
+        bodyy = bodyy ++ fileContent ++ '\r\n'; // 文件内容,可以是字符串也可以是二进制读取的
+        bodyy = bodyy ++ "--" ++ boundary ++ "--\r\n";  //结束整个请求体
+        //console.dump("bodyy", bodyy);
+
+        // 设置请求头
+        var headers = {
+            "Authorization" = "Bearer " ++ apiKey, // 认证信息
+            "Content-Type" = "multipart/form-data; boundary=" ++ boundary // 设置 Content-Type 和 boundary
+        };
+
+        // 发送 POST 请求
+        http.setHeaders(headers); // 设置请求头
+        var response = http.post(url, bodyy); // 发送请求,请求头和python不一样,要单独设置,不能加在后面当参数
+
+        // 输出响应内容
+        //..console.log("响应内容：", response);
+
+        return response; // 返回响应内容
+    };
+}
