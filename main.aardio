@@ -145,13 +145,21 @@ mainForm.editPrompt.oleCallback(
 			var filePath=f[1]; //文件完整路径
 			var apiKey = config.key;
 			// 强制选中 chkFix 并更新 knowledge_id
-			if (!mainForm.chkFix.checked) {
+			/*
+if (!mainForm.chkFix.checked) {
     			mainForm.chkFix.checked = true; // 如果 chkFix 不是 true,先切换为 true
     			mainForm.chkFix.oncommand();//手动调用 chkFix.oncommand 事件,满足选中状态的触发条件
 			}
-			// 更新 knowledge_id
-			
 			config.tools[1].retrieval.knowledge_id = "1876247480975446016";
+*/
+			// 更新 knowledge_id
+			config.tools = {
+            {
+            type = "retrieval";
+            retrieval = { knowledge_id = "1876247480975446016" }
+            }
+        };
+			
 			mainForm.msgbox(config.tools);
 
 
@@ -267,9 +275,11 @@ var assistantMsg = wb.lastAssistantMessage();
 */
 			//if(!mainForm.chkFix.checked){config.tools = null}; //设置为空就是联网搜索
 			// 如果 chkFix 不是选择状态,移除 tools 中的第一个元素
-			if (!mainForm.chkFix.checked) {
+			/*
+if (!mainForm.chkFix.checked) {
     			table.remove(config.tools, 1); // 移除第一个元素
 			}
+*/
 
 			for(k,v in config){ 
 				if(v=="")config[k] = null;
