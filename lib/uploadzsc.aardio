@@ -1,7 +1,15 @@
 ﻿import web.rest.client;
-namespace uploadzs{
+class uploadzsc{
+	// 构造函数
+    ctor(filepath,apiKey) {
+        this.apiKey = apiKey;
+        this.filepath = filepath;
+    }
+
+	
+	
 	// 定义上传文件的函数
-    uploadFile = function(filePath, apiKey) {
+    uploadFile = function() {
         // API 地址
         var url = "https://open.bigmodel.cn/api/llm-application/open/document/upload_document/1876247480975446016";
 
@@ -9,8 +17,8 @@ namespace uploadzs{
         var http = ..web.rest.client();
 
         // 读取文件内容
-        var file = ..io.file(filePath, "rb"); // 以二进制模式打开文件
-        var filename = ..io.splitpath(filePath).file; //取文件名
+        var file = ..io.file(this.filepath, "rb"); // 以二进制模式打开文件
+        var filename = ..io.splitpath(this.filepath).file; //取文件名
         var fileContent = file.read(-1); // 读取整个文件内容
         file.close(); // 关闭文件
         
@@ -18,27 +26,26 @@ namespace uploadzs{
         var boundary = "----WebKitFormBoundary" ++ ..string.random(16);
 
         // 构建表单数据 方法1
-        var body = "--" ++ boundary ++ '\r\n'; // 开始一个部分
-        body = body ++ 'Content-Disposition: form-data; name="files"; filename="' ++ filename ++ '"\r\n'; // 描述在知识库中显示的名称,必须有后缀
-        body = body ++ "Content-Type: application/octet-stream" ++ '\r\n\r\n'; // 描述文件类型,一定要是两个,还是是单引号
-        body = body ++ fileContent ++ '\r\n'; // 文件内容,可以是字符串也可以是二进制读取的
-        body = body ++ "--" ++ boundary ++ "--\r\n";  //结束整个请求体
+       // var body = "--" ++ boundary ++ '\r\n'; // 开始一个部分
+       // body = body ++ 'Content-Disposition: form-data; name="files"; filename="' ++ filename ++ '"\r\n'; // 描述在知识库中显示的名称,必须有后缀
+        //body = body ++ "Content-Type: application/octet-stream" ++ '\r\n\r\n'; // 描述文件类型,一定要是两个,还是是单引号
+        //body = body ++ fileContent ++ '\r\n'; // 文件内容,可以是字符串也可以是二进制读取的
+        //body = body ++ "--" ++ boundary ++ "--\r\n";  //结束整个请求体
         
         // 构建表单数据 方法2
-		/*
-var body = string.concat(
+        import string;
+		var body = string.concat(
     		"--", boundary, '\r\n', // 开始一个部分
     		'Content-Disposition: form-data; name="files"; filename="', filename, '"\r\n', // 描述在知识库中显示的名称,必须有后缀
     		"Content-Type: application/octet-stream\r\n\r\n", // 描述文件类型,一定要是两个,还是是单引号
     		fileContent, '\r\n', // 文件内容,可以是字符串也可以是二进制读取的
     		"--", boundary, "--\r\n"  // 结束整个请求体
 		);
-*/
 
 
         // 设置请求头
         var headers = {
-            "Authorization" = "Bearer " ++ apiKey, // 认证信息
+            "Authorization" = "Bearer " ++ this.apiKey, // 认证信息，类的实例属性要加this.调用
             "Content-Type" = "multipart/form-data; boundary=" ++ boundary // 设置 Content-Type 和 boundary
         };
 
