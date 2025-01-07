@@ -3,7 +3,7 @@ namespace uploadzs{
 	// 定义上传文件的函数
     uploadFile = function(filePath, apiKey) {
         // API 地址
-        var url = "https://open.bigmodel.cn/api/llm-application/open/document/upload_document/1871063437791133696";
+        var url = "https://open.bigmodel.cn/api/llm-application/open/document/upload_document/1876247480975446016";
 
         // 创建 HTTP 客户端
         var http = ..web.rest.client();

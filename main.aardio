@@ -38,7 +38,8 @@ var config = {
 					type = "retrieval"; 
 					retrieval = {knowledge_id = "1871063437791133696"}
 					};
-				 {
+				 /*
+{
 					type = "web_search";
    					web_search = {
    						enable = true;
@@ -48,9 +49,37 @@ var config = {
         				
 					 }
 				 }
+*/
 			  }
 	};
-			
+// 处理 chkFix 状态变化
+mainForm.chkFix.oncommand = function(id, event) {
+    if (mainForm.chkFix.checked) {
+        // 如果 chkFix 被选中,恢复 config.tools 的第一个元素为 retrieval 类型
+        config.tools = {
+            {
+            type = "retrieval";
+            retrieval = { knowledge_id = "1871063437791133696" }
+            }
+        };
+        mainForm.msgbox(config.tools)
+    } else {
+        // 如果 chkFix 取消选中,将 config.tools 的第一个元素修改为 web_search 类型
+        config.tools = {
+            {
+            type = "web_search";
+            web_search = {
+                enable = true;
+                search_query = "社保和医疗相关";
+                search_result = true;
+                search_prompt = search_prompt
+                }
+            }
+        };
+         mainForm.msgbox(config.tools)
+    }
+};
+
 var wb = web.form.chat(mainForm.wndBrowser);
 
 var systemPrompt = /****************
@@ -68,6 +97,10 @@ var systemPrompt = /****************
 
 3、社保卡工作人员专业支持
 为社保卡工作人员提供专业的业务支持和政策解读，助力工作人员更好地服务社会大众。
+
+## 要求
+
+回答完成后要表明信息的来源，是内部知识库、大模型知识还是互联网
 ****************/
 
 
@@ -107,17 +140,27 @@ mainForm.editPrompt.oleCallback(
 
             /*用法请参考 com.interface.IDataObject 库参考文档*/
             var dataObj = com.interface.IDataObject(ptrDataObj);// 获取拖放数据对象
-
             var f = dataObj.getDropFile(); // 获取拖放文件
-			var filePath=f[1];
-			win.msgbox(filePath)
-			import uploadzs;
-			//var filePath = "d:\\test.txt"; 
-			var apiKey = "bc87929ac614eefc129a2bbe1ddbbec8.TggSr7H819Ta1LVQ"; // API 密钥
-			uploadzs.uploadFile(filePath, apiKey);
             
-            var txt = dataObj.getText();// 获取拖放文本
-           win.msgbox(txt) 
+			var filePath=f[1]; //文件完整路径
+			var apiKey = config.key;
+			// 强制选中 chkFix 并更新 knowledge_id
+			if (!mainForm.chkFix.checked) {
+    			mainForm.chkFix.checked = true; // 如果 chkFix 不是 true,先切换为 true
+    			mainForm.chkFix.oncommand();//手动调用 chkFix.oncommand 事件,满足选中状态的触发条件
+			}
+			// 更新 knowledge_id
+			
+			config.tools[1].retrieval.knowledge_id = "1876247480975446016";
+			mainForm.msgbox(config.tools);
+
+
+			
+			import uploadzs; //导入上传知识的库
+			uploadzs.uploadFile(filePath, apiKey); //调用uploadFile函数上传
+            
+            //var txt = dataObj.getText();// 获取拖放文本
+           	//win.msgbox(txt) 
 
 
             if(#f){
