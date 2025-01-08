@@ -26,22 +26,25 @@ class uploadzsc{
         var boundary = "----WebKitFormBoundary" ++ ..string.random(16);
 
         // 构建表单数据 方法1
-       // var body = "--" ++ boundary ++ '\r\n'; // 开始一个部分
-       // body = body ++ 'Content-Disposition: form-data; name="files"; filename="' ++ filename ++ '"\r\n'; // 描述在知识库中显示的名称,必须有后缀
-        //body = body ++ "Content-Type: application/octet-stream" ++ '\r\n\r\n'; // 描述文件类型,一定要是两个,还是是单引号
-        //body = body ++ fileContent ++ '\r\n'; // 文件内容,可以是字符串也可以是二进制读取的
-        //body = body ++ "--" ++ boundary ++ "--\r\n";  //结束整个请求体
+       //var body = "--" ++ boundary ++ '\r\n'; // 开始一个部分
+       //body = body ++ 'Content-Disposition: form-data; name="files"; filename="' ++ filename ++ '"\r\n'; // 描述在知识库中显示的名称,必须有后缀
+       //body = body ++ "Content-Type: application/octet-stream" ++ '\r\n\r\n'; // 描述文件类型,一定要是两个\r\n,还是是单引号
+       //body = body ++ fileContent ++ '\r\n'; // 文件内容,可以是字符串也可以是二进制读取的
+       //body = body ++ "--" ++ boundary ++ "--\r\n";  //结束整个请求体
+       
         
         // 构建表单数据 方法2
         import string;
 		var body = string.concat(
     		"--", boundary, '\r\n', // 开始一个部分
     		'Content-Disposition: form-data; name="files"; filename="', filename, '"\r\n', // 描述在知识库中显示的名称,必须有后缀
-    		"Content-Type: application/octet-stream\r\n\r\n", // 描述文件类型,一定要是两个,还是是单引号
+    		"Content-Type: application/octet-stream",'\r\n\r\n', // 描述文件类型,回车换行必须和前面的分开，搞了一半天才明白
     		fileContent, '\r\n', // 文件内容,可以是字符串也可以是二进制读取的
     		"--", boundary, "--\r\n"  // 结束整个请求体
 		);
+		..win.msgbox(body);
 
+	
 
         // 设置请求头
         var headers = {
@@ -51,6 +54,7 @@ class uploadzsc{
 
         // 发送 POST 请求
         http.setHeaders(headers); // 设置请求头
+        import raw;
         var response = http.post(url, body); // 发送请求,请求头和python不一样,要单独设置,不能加在后面当参数
 
         // 输出响应内容

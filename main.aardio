@@ -164,9 +164,14 @@ if (!mainForm.chkFix.checked) {
 			mainForm.msgbox(config.tools);
 
 
+			//导入上传知识的库 方法1
+			//import uploadzs; //导入上传知识的库(名字空间）
+			//uploadzs.uploadFile(filePath, apiKey); //调用uploadFile函数上传
 			
-			import uploadzs; //导入上传知识的库
-			uploadzs.uploadFile(filePath, apiKey); //调用uploadFile函数上传
+			//导入上传知识的库 方法2
+			import uploadzsc; //导入上传知识的库(类）
+			var uploader = uploadzsc(filePath,apiKey);//实例化时传参 
+			uploader.uploadFile(); //调用uploadFile函数上传
             
             //var txt = dataObj.getText();// 获取拖放文本
            	//win.msgbox(txt) 
