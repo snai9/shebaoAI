@@ -1,4 +1,5 @@
 # 修改aardio作者的范例，弄了个自己的AI机器人
+
 ## 为什么叫shebaoAI
 - 弄的时候只是想学技术而已，所以拿社保作了测试
 - 作为一个用户可以通过AI助手查询相关的社保知识
@@ -39,10 +40,11 @@
         bodyy = bodyy ++ "--" ++ boundary ++ "--\r\n";  //结束整个请求体
         
         // 构建表单数据 方法2
-		var body = string.concat(
+        import string;
+		    var body = string.concat(
     		"--", boundary, '\r\n', // 开始一个部分
     		'Content-Disposition: form-data; name="files"; filename="', filename, '"\r\n', // 描述在知识库中显示的名称,必须有后缀
-    		"Content-Type: application/octet-stream\r\n\r\n", // 描述文件类型,一定要是两个,还是是单引号
+    		"Content-Type: application/octet-stream",'\r\n\r\n', // 描述文件类型,回车换行必须和前面的分开，搞了一半天才明白
     		fileContent, '\r\n', // 文件内容,可以是字符串也可以是二进制读取的
     		"--", boundary, "--\r\n"  // 结束整个请求体
 		);
