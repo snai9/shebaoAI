@@ -9,7 +9,7 @@ btnCopy={cls="button";text="复制";left=24;top=404;right=127;bottom=434;flat=1;
 btnSend={cls="button";text="发送";left=623;top=550;right=727;bottom=578;flat=1;font=LOGFONT(h=-14);tabstop=1;z=4};
 chkFix={cls="checkbox";text="启用知识库";left=507;top=547;right=628;bottom=578;ah=1;aw=1;bgcolor=16777215;checked=1;z=5};
 editPrompt={cls="richedit";left=11;top=479;right=747;bottom=587;bgcolor=16777215;clip=1;edge=1;multiline=1;vscroll=1;wrap=1;z=6};
-static={cls="static";text="在下框输入您要查询的问题，点击CTRL+回车键换行，直接按回车键即可发送                  取消【启用知识库】可联网查询";left=14;top=446;right=749;bottom=475;align="center";center=1;transparent=1;z=7};
+static={cls="static";text="在下框输入您要查询的问题，点击CTRL+回车键发送，直接按回车键换行                  取消【启用知识库】可联网查询";left=14;top=446;right=749;bottom=475;align="center";center=1;notify=1;transparent=1;z=7};
 wndBrowser={cls="richedit";left=12;top=12;right=748;bottom=443;clip=1;multiline=1;readonly=1;vscroll=1;wrap=1;z=3}
 )
 /*}}*/
@@ -162,6 +162,7 @@ if (!mainForm.chkFix.checked) {
         };
 			
 			mainForm.msgbox(config.tools);
+			
 
 
 			//导入上传知识的库 方法1
@@ -169,21 +170,28 @@ if (!mainForm.chkFix.checked) {
 			//uploadzs.uploadFile(filePath, apiKey); //调用uploadFile函数上传
 			
 			//导入上传知识的库 方法2
-			import uploadzsc; //导入上传知识的库(类）
-			var uploader = uploadzsc(filePath,apiKey);//实例化时传参 
-			uploader.uploadFile(); //调用uploadFile函数上传
+			//import uploadzsc; //导入上传知识的库(类）
+			//var uploader = uploadzsc(filePath,apiKey);//实例化时传参 
+			//uploader.uploadFile(); //调用uploadFile函数上传
             
+            //导入上传知识的库 方法3
+			import uploadzsd; //导入上传知识的库(多个文件）
+			win.msgbox(f);
+			var uploader = uploadzsd(f,apiKey);//实例化时传参，使用uploadzsd可同时拖入多个文件上传
+			uploader.uploadFiles(); //调用uploadFile函数上传
             //var txt = dataObj.getText();// 获取拖放文本
            	//win.msgbox(txt) 
 
 
-            if(#f){
+            /*
+if(#f){
                 wb.clear();
 	
 	            p = '\r\n\r\n---\r\n\r\n' + string.load(f[1]);// 加载文件内容
 
 	            wb.system(  p );
             }
+*/
 
             /*返回 0 继续默认处理，文本放入控件，返回 _S_FALSE 阻止默认处理。*/
             return 0/*_S_FALSE*/
@@ -347,13 +355,17 @@ wb.beforerWriteEnd = function(markdown){
 	
 }
 
-mainForm.editPrompt.onOk = function(){ 
-	mainForm.btnSend.oncommand()
-	return true; 	
+mainForm.editPrompt.onOk = function(ctrl,alt,shift){ 
+	if(ctrl){
+		mainForm.btnSend.oncommand()
+		return true; 
+	}
+		
 }
 
 
 //默认设置输入框焦点
+
 mainForm.editPrompt.setFocus();
 
 

@@ -1,0 +1,64 @@
+﻿import web.rest.client;
+class uploadzsd{
+    // 构造函数
+    ctor(filepaths, apiKey) {
+        this.apiKey = apiKey;
+        this.filepaths = filepaths; // 文件路径数组
+    }
+
+    // 定义上传文件的函数
+    uploadFiles = function() {
+        // API 地址
+        var url = "https://open.bigmodel.cn/api/llm-application/open/document/upload_document/1876247480975446016";
+
+        // 创建 HTTP 客户端
+        var http = ..web.rest.client();
+
+        // 生成 boundary 分隔符
+        var boundary = "----WebKitFormBoundary" ++ ..string.random(16);
+
+        // 构建表单数据
+
+        var bodyParts = {}; // 用于存储每个文件的部分
+
+        for(i = 1; #this.filepaths; 1) {
+            var filepath = this.filepaths[i];
+            var file = ..io.file(filepath, "rb"); // 以二进制模式打开文件
+            var filename = ..io.splitpath(filepath).file; // 取文件名
+            var fileContent = file.read(-1); // 读取整个文件内容
+            file.close(); // 关闭文件
+
+            // 构建每个文件的部分
+            import string;
+            var part = ..string.concat(
+                "--", boundary, '\r\n', // 开始一个部分
+                'Content-Disposition: form-data; name="files"; filename="', filename, '"\r\n', // 描述在知识库中显示的名称,必须有后缀
+                "Content-Type: application/octet-stream", '\r\n\r\n', // 描述文件类型
+                fileContent, '\r\n' // 文件内容
+            );
+
+            ..table.push(bodyParts, part); // 将部分添加到 bodyParts 数组中
+            ..win.msgbox(bodyParts);
+        }
+		..win.msgbox(bodyParts);
+        // 结束整个请求体
+        var body = ..string.join(bodyParts) ++ "--" ++ boundary ++ "--\r\n";
+        ..win.msgbox(body);
+
+        // 设置请求头
+        var headers = {
+            "Authorization" = "Bearer " ++ this.apiKey, // 认证信息,类的实例属性要加this.调用
+            "Content-Type" = "multipart/form-data; boundary=" ++ boundary // 设置 Content-Type 和 boundary
+        };
+
+        // 发送 POST 请求
+        http.setHeaders(headers); // 设置请求头
+
+        var response = http.post(url, body); // 发送请求
+
+        // 输出响应内容
+        //..console.log("响应内容：", response);
+
+        return response; // 返回响应内容
+    };
+}
