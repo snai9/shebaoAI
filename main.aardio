@@ -28,7 +28,7 @@ var search_prompt = /****************
 
 ****************/
 var config = {
-				key = string.getenv("ZHIPUAI_API_KEY") || "bc87929ac614eefc129a2bbe1ddbbec8.TggSr7H819Ta1LVQ";
+				key = string.getenv("ZHIPUAI_API_KEY") || "bc87929ac614eefc129a2bbe1ddbbec8.TggSr7H819Ta1LVV";
 				url = "https://open.bigmodel.cn/api/paas/v4";//接口地址
 				model = "glm-4-flash";//模型名称首字符为 @ 则使用 Anthropic 接口
 				temperature = 0.1;//0.1-0.3适合稳定输出场景
