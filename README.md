@@ -59,6 +59,10 @@
   - 类的名字空间和实例的名字空间是独立的，但它们可以通过 this 和类名相互访问 <br /> 
   - 实例无法直接访问类的静态成员（无this的不能访问）但可以通过类名访问静态成员
 
+- aardio中把变量放入模板中，为了不改变原格式，比如markdown，可以先随便置入一段文字，再用string.replace替换，这是个好思路，比string.format好。
+
+- 有一个要明白的事，就是在mainForm.chkFix.oncommand()中定义了mainForm.chkFix.checked的事件，代码执行中，你勾选mainForm.chkFix后会按照mainForm.chkFix.oncommand()定义好的去执行
+mainForm.chkFix.checked的事件，但用代码修改mainForm.chkFix.checked的状态时却并不会执行，还得手动调用 chkFix.oncommand 事件,以满足选中状态的触发条件
 
 
   

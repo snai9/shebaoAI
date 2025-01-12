@@ -7,31 +7,57 @@ mainForm.add(
 btnClear={cls="button";text="清除";left=130;top=404;right=233;bottom=434;flat=1;z=1};
 btnCopy={cls="button";text="复制";left=24;top=404;right=127;bottom=434;flat=1;z=2};
 btnSend={cls="button";text="发送";left=623;top=550;right=727;bottom=578;flat=1;font=LOGFONT(h=-14);tabstop=1;z=4};
-chkFix={cls="checkbox";text="启用知识库";left=507;top=547;right=628;bottom=578;ah=1;aw=1;bgcolor=16777215;checked=1;z=5};
-editPrompt={cls="richedit";left=11;top=479;right=747;bottom=587;bgcolor=16777215;clip=1;edge=1;multiline=1;vscroll=1;wrap=1;z=6};
-static={cls="static";text="在下框输入您要查询的问题，点击CTRL+回车键发送，直接按回车键换行                  取消【启用知识库】可联网查询";left=14;top=446;right=749;bottom=475;align="center";center=1;notify=1;transparent=1;z=7};
+chkFix={cls="checkbox";text="启用知识库";left=407;top=556;right=496;bottom=575;ah=1;aw=1;bgcolor=16777215;checked=1;z=5};
+chkNet={cls="checkbox";text="启用互联网";left=511;top=556;right=600;bottom=575;ah=1;aw=1;bgcolor=16777215;z=7};
+editPrompt={cls="richedit";left=11;top=479;right=747;bottom=587;bgcolor=16777215;clip=1;edge=1;multiline=1;vscroll=1;wrap=1;z=8};
+static={cls="static";text="CTRL+回车键发送        直接按回车键换行        取消【启用知识库】可使用预训练知识        勾选【启用互联网】可连网增强检索";left=14;top=446;right=749;bottom=475;align="center";center=1;notify=1;transparent=1;z=6};
 wndBrowser={cls="richedit";left=12;top=12;right=748;bottom=443;clip=1;multiline=1;readonly=1;vscroll=1;wrap=1;z=3}
 )
 /*}}*/
 
 //创建显示聊天消虑的 Web 浏览器窗口
 import web.form.chat;
+// 获取当前日期和时间
+var now = time.now();
+
+// 提取年、月、日
+var year = now.year;
+var month = now.month;
+var day = now.day;
+
+// 格式化日期字符串
+var dateString = string.format("%04d-%02d-%02d", year, month, day);
+
 var search_prompt = /****************
 # 以下是来自互联网的信息：
 {search_result}
 
+# 当前日期: 2024-XX-XX
 
 # 要求：
-根据最新发布的信息回答用户问题,当回答引用了参考信息时,必须在句末使用对应的{ref_序号}来标明参考信息来源。
-回答完成后必须表明信息的来源，是内部知识库、大模型知识还是互联网
+- 根据最新发布的信息回答用户问题
+- 回答时注明日期并按日期排序
+- 当回答引用了参考信息时,必须在句末使用对应的{ref_序号}来标明参考信息来源。
+- {ref_序号}要修改为实际的参考消息来源，按照通常的引用格式给出
+- 回答完成后必须表明信息的具体来源
 
 
 ****************/
+
+// 使用 string.replace 替换 2024-XX-XX 为 dateString
+search_prompt = string.replace(search_prompt, "2024-XX-XX", dateString);
+
+// 输出替换后的字符串
+print(search_prompt);
+
+
+
 var config = {
 				key = string.getenv("ZHIPUAI_API_KEY") || "bc87929ac614eefc129a2bbe1ddbbec8.TggSr7H819Ta1LVV";
 				url = "https://open.bigmodel.cn/api/paas/v4";//接口地址
 				model = "glm-4-flash";//模型名称首字符为 @ 则使用 Anthropic 接口
 				temperature = 0.1;//0.1-0.3适合稳定输出场景
+				top_p = 0.7;
 				maxTokens = 4096;//最大回复长度
 				msgLimit = 30;
 				tools= {
@@ -56,6 +82,8 @@ var config = {
 // 处理 chkFix 状态变化
 mainForm.chkFix.oncommand = function(id, event) {
     if (mainForm.chkFix.checked) {
+        mainForm.chkNet.checked = false; // 如果 chkFix 不是 true,先切换为 true
+    	
         // 如果 chkFix 被选中,恢复 config.tools 的第一个元素为 retrieval 类型
         config.tools = {
             {
@@ -63,21 +91,40 @@ mainForm.chkFix.oncommand = function(id, event) {
             retrieval = { knowledge_id = "1871063437791133696" }
             }
         };
-        mainForm.msgbox(config.tools)
+        mainForm.msgbox(config)
     } else {
         // 如果 chkFix 取消选中,将 config.tools 的第一个元素修改为 web_search 类型
+        config.tools = null;
+        for(k,v in config){ 
+				if(v=="")config[k] = null;}
+         mainForm.msgbox(config)
+    }
+};
+
+// 处理 chkNet 状态变化
+mainForm.chkNet.oncommand = function(id, event) {
+    if (mainForm.chkNet.checked) {
+        mainForm.chkFix.checked = false; // 如果 chkFix 不是false,先切换为 false
+    	
+        // 如果 chkNet 被选中,恢复 config.tools 的第一个元素为 web_search 类型
         config.tools = {
             {
             type = "web_search";
             web_search = {
                 enable = true;
-                search_query = "社保和医疗相关";
+                //search_query = "社保 | 医疗";//限制搜索内容，提高搜索精度 
                 search_result = true;
                 search_prompt = search_prompt
                 }
             }
         };
-         mainForm.msgbox(config.tools)
+        mainForm.msgbox(config)
+    } else {
+        // 如果 chkFix 取消选中,将 config.tools修改为 null
+        config.tools = null;
+        for(k,v in config){ 
+				if(v=="")config[k] = null;}
+         mainForm.msgbox(config)
     }
 };
 
@@ -365,6 +412,8 @@ mainForm.editPrompt.onOk = function(ctrl,alt,shift){
 
 
 //默认设置输入框焦点
+
+
 
 mainForm.editPrompt.setFocus();
 
