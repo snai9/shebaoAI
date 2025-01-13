@@ -64,6 +64,8 @@
 - 有一个要明白的事，就是在mainForm.chkFix.oncommand()中定义了mainForm.chkFix.checked的事件，代码执行中，你勾选mainForm.chkFix后会按照mainForm.chkFix.oncommand()定义好的去执行
 mainForm.chkFix.checked的事件，但用代码修改mainForm.chkFix.checked的状态时却并不会执行，还得手动调用 chkFix.oncommand 事件,以满足选中状态的触发条件
 
+- 在控件回调函数中，检测按下某个键或检测输入了什么内容作为条件进行控件状态的控制
+
 
   
 

@@ -25,27 +25,26 @@ var year = now.year;
 var month = now.month;
 var day = now.day;
 
-// 格式化日期字符串
-var dateString = string.format("%04d-%02d-%02d", year, month, day);
 
 var search_prompt = /****************
 # 以下是来自互联网的信息：
 {search_result}
 
-# 当前日期: 2024-XX-XX
+# 当前日期: {current_date}
 
 # 要求：
 - 根据最新发布的信息回答用户问题
 - 回答时注明日期并按日期排序
-- 当回答引用了参考信息时,必须在句末使用对应的{ref_序号}来标明参考信息来源。
-- {ref_序号}要修改为实际的参考消息来源，按照通常的引用格式给出
-- 回答完成后必须表明信息的具体来源
+- 当回答引用了参考信息时,在参考消中找到{ref_序号}对应的{media}的具体值来标注来源。
+- 重申，不要直接显示{ref_序号}，按照通常的引用格式给出其对应的实际的参考消息来源
+- 回答完成后必须表明信息数据是互联网还是内部知识或文档
 
 
 ****************/
-
+// 格式化日期字符串,因为下面的当前日期模型中有现成的变量，这里不需要了，但方法很重要，得掌握
+//var dateString = string.format("%04d-%02d-%02d", year, month, day);
 // 使用 string.replace 替换 2024-XX-XX 为 dateString
-search_prompt = string.replace(search_prompt, "2024-XX-XX", dateString);
+//search_prompt = string.replace(search_prompt, "2024-XX-XX", dateString);
 
 // 输出替换后的字符串
 print(search_prompt);
@@ -57,7 +56,7 @@ var config = {
 				url = "https://open.bigmodel.cn/api/paas/v4";//接口地址
 				model = "glm-4-flash";//模型名称首字符为 @ 则使用 Anthropic 接口
 				temperature = 0.1;//0.1-0.3适合稳定输出场景
-				top_p = 0.7;
+				top_p = 0.5;
 				//maxTokens = 4096;//最大回复长度
 				msgLimit = 30;
 				tools= {
@@ -96,10 +95,11 @@ mainForm.chkFix.oncommand = function(id, event) {
 
 // 处理 chkNet 状态变化
 mainForm.chkNet.oncommand = function(id, event) {
-	//没有检测到按住ESC键，点击chkNet勾选不了
-	if(!key.getState("ESC")){ 
-        	 mainForm.chkNet.checked = false;
-        }
+	//三个条件一个都满足不了就不能勾选上
+	if (!string.match(mainForm.editPrompt.text, "<9>|<玖>") &&
+    !key.getState("ESC")) {
+    mainForm.chkNet.checked = false;
+}
     if (mainForm.chkNet.checked) {
         mainForm.chkFix.checked = false; // 如果 chkNet 是 true,就切换chkFix为 false
     	
@@ -187,7 +187,7 @@ mainForm.editPrompt.oleCallback(
             var dataObj = com.interface.IDataObject(ptrDataObj);// 获取拖放数据对象
             var f = dataObj.getDropFile(); // 获取拖放文件
             
-			var filePath=f[1]; //文件完整路径
+			//var filePath=f[1]; //文件完整路径
 			var apiKey = config.key;
 			// 强制选中 chkFix 并更新 knowledge_id
 			/*
@@ -312,6 +312,7 @@ var assistantMsg = wb.lastAssistantMessage();
 	
 	if(#knowledge){
 		mainForm.chkFix.checked = false;
+		mainForm.chkFix.oncommand();
 		wb.system(knowledge);
 		
 	} 
@@ -376,7 +377,6 @@ wb.onWriteEnd = function(){
 	// 在 AI 回复结束后,确保在 wb.chatMessage 末尾添加两个空行
 	// 在回复结束后回调虽然也能添加空行，但会造成内容区域不能直接到底部，要靠滑杆往下拉才行
     //wb.assistant("<br><br>作者：snai9");
-    //mainForm.chkFix.checked = true;
     mainForm.editPrompt.setFocus();
 }
 
