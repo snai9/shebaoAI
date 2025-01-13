@@ -8,7 +8,7 @@ btnClear={cls="button";text="清除";left=130;top=404;right=233;bottom=434;flat=
 btnCopy={cls="button";text="复制";left=24;top=404;right=127;bottom=434;flat=1;z=2};
 btnSend={cls="button";text="发送";left=623;top=550;right=727;bottom=578;flat=1;font=LOGFONT(h=-14);tabstop=1;z=4};
 chkFix={cls="checkbox";text="启用知识库";left=407;top=556;right=496;bottom=575;ah=1;aw=1;bgcolor=16777215;checked=1;z=5};
-chkNet={cls="checkbox";text="启用互联网";left=511;top=556;right=600;bottom=575;ah=1;aw=1;bgcolor=16777215;disabled=1;z=7};
+chkNet={cls="checkbox";text="启用互联网";left=511;top=556;right=600;bottom=575;ah=1;aw=1;bgcolor=16777215;z=7};
 editPrompt={cls="richedit";left=11;top=479;right=747;bottom=587;bgcolor=16777215;clip=1;edge=1;multiline=1;vscroll=1;wrap=1;z=8};
 static={cls="static";text="CTRL+回车键发送        直接按回车键换行        取消【启用知识库】可使用预训练知识        勾选【启用互联网】可连网增强检索";left=14;top=446;right=749;bottom=475;align="center";center=1;notify=1;transparent=1;z=6};
 wndBrowser={cls="richedit";left=12;top=12;right=748;bottom=443;clip=1;multiline=1;readonly=1;vscroll=1;wrap=1;z=3}
@@ -58,20 +58,31 @@ var config = {
 				model = "glm-4-flash";//模型名称首字符为 @ 则使用 Anthropic 接口
 				temperature = 0.1;//0.1-0.3适合稳定输出场景
 				top_p = 0.7;
-				//maxTokens = 4096;//最大回复长度
+				maxTokens = 4096;//最大回复长度
 				msgLimit = 30;
 				tools= {
 				 {
 					type = "retrieval"; 
 					retrieval = {knowledge_id = "1871063437791133696"}
 					};
-				 
+				 /*
+{
+					type = "web_search";
+   					web_search = {
+   						enable = true;
+   						search_query = "社保和医疗相关",
+   						search_result = true;
+          				search_prompt = search_prompt
+        				
+					 }
+				 }
+*/
 			  }
 	};
 // 处理 chkFix 状态变化
 mainForm.chkFix.oncommand = function(id, event) {
     if (mainForm.chkFix.checked) {
-        mainForm.chkNet.checked = false; // 如果 chkFix 是 true,就切换chkNet为 false
+        mainForm.chkNet.checked = false; // 如果 chkFix 不是 true,先切换为 true
     	
         // 如果 chkFix 被选中,恢复 config.tools 的第一个元素为 retrieval 类型
         config.tools = {
@@ -82,11 +93,7 @@ mainForm.chkFix.oncommand = function(id, event) {
         };
         mainForm.msgbox(config)
     } else {
-        //取消chkFix时如果按住CTRL键则可解除chkNet的禁用状态
-        if(key.getState("CTRL")){ 
-        	 mainForm.chkNet.disabled = false;
-        }
-        // 如果 chkFix 取消选中,将 config.tools 修改为空；
+        // 如果 chkFix 取消选中,将 config.tools 的第一个元素修改为 web_search 类型
         config.tools = null;
         for(k,v in config){ 
 				if(v=="")config[k] = null;}
@@ -96,12 +103,17 @@ mainForm.chkFix.oncommand = function(id, event) {
 
 // 处理 chkNet 状态变化
 mainForm.chkNet.oncommand = function(id, event) {
-	//没有检测到按住ESC键，点击chkNet勾选不了
-	if(!key.getState("ESC")){ 
-        	 mainForm.chkNet.checked = false;
-        }
+	import winex.editor;
+//获取当前文本输入窗口光标插入点前后的文本。
+	if (!string.match(mainForm.editPrompt.text, "<9>|<杨东>") &&
+    !key.getState("ESC")) {
+    mainForm.chkNet.checked = false;
+}
+
+
+	
     if (mainForm.chkNet.checked) {
-        mainForm.chkFix.checked = false; // 如果 chkNet 是 true,就切换chkFix为 false
+        mainForm.chkFix.checked = false; // 如果 chkFix 不是false,先切换为 false
     	
         // 如果 chkNet 被选中,恢复 config.tools 的第一个元素为 web_search 类型
         config.tools = {
@@ -117,7 +129,7 @@ mainForm.chkNet.oncommand = function(id, event) {
         };
         mainForm.msgbox(config)
     } else {
-        // 如果 chkNet 取消选中,将 config.tools修改为 null
+        // 如果 chkFix 取消选中,将 config.tools修改为 null
         config.tools = null;
         for(k,v in config){ 
 				if(v=="")config[k] = null;}
