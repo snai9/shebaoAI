@@ -47,7 +47,7 @@ var search_prompt = /****************
 //search_prompt = string.replace(search_prompt, "2024-XX-XX", dateString);
 
 // 输出替换后的字符串
-print(search_prompt);
+//print(search_prompt);
 
 
 
@@ -79,7 +79,7 @@ mainForm.chkFix.oncommand = function(id, event) {
             retrieval = { knowledge_id = "1871063437791133696" }
             }
         };
-        mainForm.msgbox(config)
+        
     } else {
         //取消chkFix时如果按住CTRL键则可解除chkNet的禁用状态
         if(key.getState("CTRL")){ 
@@ -89,7 +89,7 @@ mainForm.chkFix.oncommand = function(id, event) {
         config.tools = null;
         for(k,v in config){ 
 				if(v=="")config[k] = null;}
-         mainForm.msgbox(config)
+        
     }
 };
 
@@ -205,7 +205,7 @@ if (!mainForm.chkFix.checked) {
             }
         };
 			
-			mainForm.msgbox(config.tools);
+			
 			
 
 
@@ -220,7 +220,7 @@ if (!mainForm.chkFix.checked) {
             
             //导入上传知识的库 方法3
 			import uploadzsd; //导入上传知识的库(多个文件）
-			win.msgbox(f);
+			
 			var uploader = uploadzsd(f,apiKey);//实例化时传参，使用uploadzsd可同时拖入多个文件上传
 			uploader.uploadFiles(); //调用uploadFile函数上传
             //var txt = dataObj.getText();// 获取拖放文本
